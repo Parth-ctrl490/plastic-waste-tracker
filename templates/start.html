@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlastiSat - Plastic Detection System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0c1445 0%, #1a237e 30%, #283593 60%, #3f51b5 100%);
+            color: white;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Animated background elements */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite alternate;
+        }
+
+        .star:nth-child(odd) {
+            animation-delay: 1s;
+        }
+
+        .star:nth-child(3n) {
+            animation-delay: 2s;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.3; transform: scale(1); }
+            100% { opacity: 1; transform: scale(1.2); }
+        }
+
+        .floating-orbs {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(0, 230, 118, 0.3), rgba(0, 188, 212, 0.1));
+            animation: float 8s infinite ease-in-out;
+        }
+
+        .orb:nth-child(1) { width: 60px; height: 60px; top: 20%; left: 10%; animation-delay: 0s; }
+        .orb:nth-child(2) { width: 40px; height: 40px; top: 70%; left: 80%; animation-delay: 2s; }
+        .orb:nth-child(3) { width: 80px; height: 80px; top: 40%; left: 85%; animation-delay: 4s; }
+        .orb:nth-child(4) { width: 30px; height: 30px; top: 80%; left: 20%; animation-delay: 1s; }
+        .orb:nth-child(5) { width: 50px; height: 50px; top: 10%; left: 70%; animation-delay: 3s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) translateX(0px) rotate(0deg); opacity: 0.3; }
+            25% { transform: translateY(-20px) translateX(10px) rotate(90deg); opacity: 0.6; }
+            50% { transform: translateY(-10px) translateX(-10px) rotate(180deg); opacity: 0.8; }
+            75% { transform: translateY(-30px) translateX(5px) rotate(270deg); opacity: 0.4; }
+        }
+
+        /* Main content container */
+        .intro-container {
+            text-align: center;
+            z-index: 10;
+            position: relative;
+            max-width: 600px;
+            padding: 40px;
+        }
+
+        /* Logo container with placeholder */
+        .logo-container {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 40px;
+            position: relative;
+            opacity: 0;
+            animation: logoFadeIn 2s ease-out 0.5s forwards;
+        }
+
+        .logo-placeholder {
+            width: 100%;
+            height: 100%;
+            border: 3px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo-placeholder:hover {
+            border-color: #00e676;
+            background: rgba(0, 230, 118, 0.1);
+            transform: scale(1.05);
+            box-shadow: 0 20px 40px rgba(0, 230, 118, 0.3);
+        }
+
+        .logo-placeholder::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+            transform: rotate(45deg);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .logo-icon {
+            font-size: 4rem;
+            margin-bottom: 10px;
+            opacity: 0.6;
+            filter: drop-shadow(0 0 20px rgba(0, 230, 118, 0.5));
+            color: #00e676;
+        }
+
+        .logo-text {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 300;
+        }
+
+        /* If user has an actual logo image, show it instead of placeholder */
+        .logo-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 17px;
+            display: block;
+        }
+
+        /* Hide placeholder content when image loads */
+        .logo-placeholder.has-image .logo-icon,
+        .logo-placeholder.has-image .logo-text {
+            display: none;
+        }
+
+        /* Title and subtitle */
+        .title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00e676 0%, #00bcd4 50%, #2196f3 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            opacity: 0;
+            animation: titleSlideUp 1.5s ease-out 1s forwards;
+            position: relative;
+        }
+
+        .title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #00e676, #00bcd4);
+            animation: underlineExpand 1s ease-out 2s forwards;
+        }
+
+        @keyframes underlineExpand {
+            to { width: 100%; }
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 50px;
+            opacity: 0;
+            animation: subtitleFadeIn 1.2s ease-out 1.8s forwards;
+            font-weight: 300;
+            line-height: 1.6;
+        }
+
+        /* Start button */
+        .start-button {
+            display: inline-block;
+            padding: 18px 50px;
+            background: linear-gradient(135deg, #00e676 0%, #00bcd4 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            box-shadow: 0 15px 35px rgba(0, 230, 118, 0.4);
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            animation: buttonFadeIn 1s ease-out 2.5s forwards;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .start-button:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 25px 50px rgba(0, 230, 118, 0.6);
+            background: linear-gradient(135deg, #00e676 0%, #4fc3f7 100%);
+        }
+
+        .start-button:active {
+            transform: translateY(-2px) scale(1.02);
+        }
+
+        .start-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .start-button:hover::before {
+            left: 100%;
+        }
+
+        .start-button::after {
+            content: '→';
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.4rem;
+            transition: transform 0.3s ease;
+        }
+
+        .start-button:hover::after {
+            transform: translateY(-50%) translateX(5px);
+        }
+
+        /* Loading animation for button click */
+        .start-button.loading {
+            pointer-events: none;
+            background: linear-gradient(135deg, #4caf50 0%, #81c784 100%);
+        }
+
+        .start-button.loading::after {
+            content: '';
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            right: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: translateY(-50%) rotate(0deg); }
+            100% { transform: translateY(-50%) rotate(360deg); }
+        }
+
+        /* Entrance animations */
+        @keyframes logoFadeIn {
+            0% { opacity: 0; transform: scale(0.8) rotateY(-30deg); }
+            100% { opacity: 1; transform: scale(1) rotateY(0deg); }
+        }
+
+        @keyframes titleSlideUp {
+            0% { opacity: 0; transform: translateY(30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes subtitleFadeIn {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes buttonFadeIn {
+            0% { opacity: 0; transform: translateY(20px) scale(0.9); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* Particle effects */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: #00e676;
+            border-radius: 50%;
+            opacity: 0.7;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .intro-container {
+                padding: 20px;
+                max-width: 90%;
+            }
+            
+            .logo-container {
+                width: 150px;
+                height: 150px;
+                margin-bottom: 30px;
+            }
+            
+            .logo-icon {
+                font-size: 3rem;
+            }
+            
+            .title {
+                font-size: 2.5rem;
+            }
+            
+            .subtitle {
+                font-size: 1.1rem;
+                margin-bottom: 40px;
+            }
+            
+            .start-button {
+                padding: 15px 40px;
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .title {
+                font-size: 2rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+            
+            .logo-container {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .logo-icon {
+                font-size: 2.5rem;
+            }
+        }
+
+        /* Exit animation when navigating */
+        .fade-out {
+            animation: fadeOut 0.8s ease-in-out forwards;
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(1.1); filter: blur(10px); }
+        }
+
+        /* Sparkle animation */
+        @keyframes sparkle {
+            0% { opacity: 1; transform: scale(0); }
+            50% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(0); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated background -->
+    <div class="stars" id="stars"></div>
+    
+    <div class="floating-orbs">
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+    </div>
+    
+    <div class="particles" id="particles"></div>
+
+    <!-- Main content -->
+    <div class="intro-container" id="intro-container">
+        <!-- Logo container -->
+        <div class="logo-container">
+            <div class="logo-placeholder" id="logo-placeholder">
+                <i class="fas fa-satellite logo-icon"></i>
+                <div class="logo-text">PlastiSat Logo</div>
+                <img src="/static/logo.png" alt="PlastiSat Logo" class="logo-image" id="logo-image" style="display: none;">
+            </div>
+        </div>
+
+        <!-- Title and subtitle -->
+        <h1 class="title">PlastiSat</h1>
+        <p class="subtitle">
+            Advanced satellite-based plastic detection system for ocean monitoring and environmental protection
+        </p>
+
+        <!-- Start button - FIXED -->
+        <a href="/app" class="start-button" id="start-button" onclick="startApp(event)">
+            <span>Start Application</span>
+        </a>
+    </div>
+
+    <script>
+        // Check if image loads successfully
+        document.addEventListener('DOMContentLoaded', function() {
+            const img = document.getElementById('logo-image');
+            const placeholder = document.getElementById('logo-placeholder');
+            
+            img.onload = function() {
+                console.log('Image loaded successfully');
+                img.style.display = 'block';
+                placeholder.classList.add('has-image');
+            };
+            
+            img.onerror = function() {
+                console.log('Image failed to load, using fallback icon');
+                img.style.display = 'none';
+                placeholder.classList.remove('has-image');
+            };
+            
+            // Start loading the image
+            img.src = '/static/logo.png';
+            
+            // Initialize other animations
+            createStars();
+            createParticles();
+            
+            // Add some interactive sparkles on mouse move
+            document.addEventListener('mousemove', function(e) {
+                if (Math.random() > 0.9) {
+                    createSparkle(e.clientX, e.clientY);
+                }
+            });
+        });
+
+        // Create animated stars
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            const starCount = 100;
+
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                
+                // Some stars are brighter
+                if (Math.random() > 0.8) {
+                    star.style.width = '3px';
+                    star.style.height = '3px';
+                    star.style.boxShadow = '0 0 10px rgba(255,255,255,0.8)';
+                }
+                
+                starsContainer.appendChild(star);
+            }
+        }
+
+        // Create floating particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            
+            setInterval(() => {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + 'vw';
+                particle.style.bottom = '-5px';
+                
+                const duration = Math.random() * 3 + 4;
+                const drift = (Math.random() - 0.5) * 200;
+                
+                particle.style.animation = `floatUp ${duration}s ease-out forwards`;
+                particlesContainer.appendChild(particle);
+                
+                // Animate particle
+                let position = -5;
+                const animate = () => {
+                    position += (100 / (duration * 60));
+                    particle.style.bottom = position + 'vh';
+                    particle.style.transform = `translateX(${Math.sin(position * 0.02) * drift}px)`;
+                    particle.style.opacity = Math.max(0, 1 - position / 100);
+                    
+                    if (position < 105) {
+                        requestAnimationFrame(animate);
+                    } else {
+                        particle.remove();
+                    }
+                };
+                
+                animate();
+            }, 300);
+        }
+
+        // Start app with beautiful transition
+        function startApp(event) {
+            event.preventDefault();
+            
+            const button = document.getElementById('start-button');
+            const container = document.getElementById('intro-container');
+            
+            // Add loading state to button
+            button.classList.add('loading');
+            button.innerHTML = '<span>Loading...</span>';
+            
+            // Create exit particles effect
+            createExitEffect();
+            
+            // Fade out animation
+            setTimeout(() => {
+                container.classList.add('fade-out');
+            }, 800);
+            
+            // Navigate to main app
+            setTimeout(() => {
+                window.location.href = '/app'; 
+            }, 1600);
+        }
+
+        // Create particle effect when starting app
+        function createExitEffect() {
+            const colors = ['#00e676', '#00bcd4', '#2196f3', '#ffffff'];
+            
+            for (let i = 0; i < 30; i++) {
+                setTimeout(() => {
+                    const particle = document.createElement('div');
+                    particle.style.position = 'fixed';
+                    particle.style.left = '50%';
+                    particle.style.top = '70%';
+                    particle.style.width = Math.random() * 6 + 3 + 'px';
+                    particle.style.height = particle.style.width;
+                    particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    particle.style.borderRadius = '50%';
+                    particle.style.pointerEvents = 'none';
+                    particle.style.zIndex = '1000';
+                    
+                    const angle = (Math.random() * 360) * Math.PI / 180;
+                    const velocity = Math.random() * 8 + 3;
+                    const gravity = 0.1;
+                    let vx = Math.cos(angle) * velocity;
+                    let vy = Math.sin(angle) * velocity;
+                    let x = 0;
+                    let y = 0;
+                    
+                    document.body.appendChild(particle);
+                    
+                    const animate = () => {
+                        x += vx;
+                        y += vy;
+                        vy += gravity;
+                        
+                        particle.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px)`;
+                        particle.style.opacity = Math.max(0, 1 - Math.abs(y) / 300);
+                        
+                        if (Math.abs(y) < 400 && Math.abs(x) < 800) {
+                            requestAnimationFrame(animate);
+                        } else {
+                            particle.remove();
+                        }
+                    };
+                    
+                    animate();
+                }, i * 50);
+            }
+        }
+
+        // Add hover effect to logo
+        document.querySelector('.logo-placeholder').addEventListener('mouseenter', function() {
+            this.style.transform = 'scale(1.05) rotateY(5deg)';
+        });
+
+        document.querySelector('.logo-placeholder').addEventListener('mouseleave', function() {
+            this.style.transform = 'scale(1) rotateY(0deg)';
+        });
+
+        // Create sparkle effect
+        function createSparkle(x, y) {
+            const sparkle = document.createElement('div');
+            sparkle.style.position = 'fixed';
+            sparkle.style.left = x + 'px';
+            sparkle.style.top = y + 'px';
+            sparkle.style.width = '4px';
+            sparkle.style.height = '4px';
+            sparkle.style.background = '#00e676';
+            sparkle.style.borderRadius = '50%';
+            sparkle.style.pointerEvents = 'none';
+            sparkle.style.zIndex = '100';
+            sparkle.style.animation = 'sparkle 1s ease-out forwards';
+            
+            document.body.appendChild(sparkle);
+            setTimeout(() => sparkle.remove(), 1000);
+        }
+    </script>
+</body>
+</html>
