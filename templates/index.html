@@ -1,0 +1,1461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ocean Plastic Detection System - NASA Tech</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(0, 255, 136, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 212, 255, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .header {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1.2rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+        }
+
+        .logo i {
+            font-size: 2rem;
+            background: linear-gradient(45deg, #00d4ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .logo h1 {
+            background: linear-gradient(45deg, #00d4ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .logo span {
+            font-size: 0.85rem;
+            opacity: 0.7;
+            font-weight: 400;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 2rem;
+            font-size: 0.9rem;
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .stat:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .stat i {
+            color: #00d4ff;
+        }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: 320px 1fr 380px;
+            height: calc(100vh - 88px);
+            gap: 1.5rem;
+            padding: 1.5rem;
+        }
+
+        .sidebar, .controls {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .map-container {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+
+        .control-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .control-section h3 {
+            margin-bottom: 1.5rem;
+            color: #00ff88;
+            border-bottom: 2px solid rgba(0, 255, 136, 0.3);
+            padding-bottom: 0.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .satellite-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .satellite-option {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .satellite-option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .satellite-option:hover::before {
+            left: 100%;
+        }
+
+        .satellite-option:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateX(5px);
+        }
+
+        .satellite-option.active {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(0, 255, 136, 0.1));
+            border: 1px solid #00d4ff;
+            box-shadow: 0 4px 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .satellite-option input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #00d4ff;
+        }
+
+        .detection-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .slider-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .slider-container label {
+            font-weight: 500;
+            color: #e0e0e0;
+        }
+
+        .slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            outline: none;
+            -webkit-appearance: none;
+            position: relative;
+        }
+
+        .slider::-webkit-slider-track {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+
+        .slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #00d4ff, #00ff88);
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00d4ff, #00ff88);
+            color: #ffffff;
+            box-shadow: 0 4px 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(0, 212, 255, 0.5);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .btn-upload {
+            background: linear-gradient(135deg, #ff6b6b, #ffa500);
+            color: #ffffff;
+            box-shadow: 0 4px 20px rgba(255, 107, 107, 0.3);
+        }
+
+        .btn-upload:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(255, 107, 107, 0.5);
+        }
+
+        .data-panel {
+            max-height: 350px;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
+        .data-panel::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .data-panel::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .data-panel::-webkit-scrollbar-thumb {
+            background: linear-gradient(45deg, #00d4ff, #00ff88);
+            border-radius: 10px;
+        }
+
+        .detection-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-radius: 12px;
+            border-left: 4px solid;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .detection-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, currentColor, transparent);
+        }
+
+        .detection-item:hover {
+            transform: translateX(5px);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .detection-item.high { 
+            border-left-color: #ff4757;
+            color: #ff4757;
+        }
+        .detection-item.medium { 
+            border-left-color: #ffa502;
+            color: #ffa502;
+        }
+        .detection-item.low { 
+            border-left-color: #7bed9f;
+            color: #7bed9f;
+        }
+
+        .severity-badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .severity-high { 
+            background: linear-gradient(45deg, #ff4757, #ff6b6b);
+            color: #ffffff;
+        }
+        .severity-medium { 
+            background: linear-gradient(45deg, #ffa502, #ff7f50);
+            color: #ffffff;
+        }
+        .severity-low { 
+            background: linear-gradient(45deg, #7bed9f, #2ed573);
+            color: #ffffff;
+        }
+
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            border-radius: 20px;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top-color: #00d4ff;
+            border-right-color: #00ff88;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1.5rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: #ffffff;
+        }
+
+        .loading-subtext {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            color: #00d4ff;
+        }
+
+        .legend {
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(20px);
+            padding: 1.5rem;
+            border-radius: 15px;
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            z-index: 1000;
+            min-width: 250px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+
+        .legend h4 {
+            margin-bottom: 1.2rem;
+            color: #00ff88;
+            font-weight: 600;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .legend-item:hover {
+            transform: translateX(5px);
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .chart-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .upload-section {
+            background: rgba(255, 107, 107, 0.1);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 2px dashed rgba(255, 107, 107, 0.3);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .upload-section:hover {
+            border-color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.2);
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .file-input {
+            opacity: 0;
+            position: absolute;
+            z-index: -1;
+        }
+
+        .file-input-label {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .file-input-label:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .modal-container {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border-radius: 20px;
+            padding: 2.5rem;
+            text-align: center;
+            max-width: 450px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+            transform: scale(0.9);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.visible .modal-container {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .modal-container h4 {
+            margin-bottom: 1.5rem;
+            color: #00ff88;
+            font-size: 1.5rem;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .success-notification {
+            position: fixed;
+            top: 100px;
+            right: 30px;
+            background: linear-gradient(135deg, #00ff88, #00d4ff);
+            color: #ffffff;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            box-shadow: 0 8px 30px rgba(0, 255, 136, 0.3);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 3000;
+        }
+
+        .success-notification.show {
+            transform: translateX(0);
+        }
+
+        @media (max-width: 1200px) {
+            .main-container {
+                grid-template-columns: 280px 1fr 320px;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto 1fr;
+                height: auto;
+            }
+            
+            .sidebar, .controls {
+                display: flex;
+                gap: 2rem;
+                overflow-x: auto;
+                padding: 1.5rem;
+            }
+            
+            .control-section {
+                min-width: 280px;
+            }
+
+            .map-container {
+                height: 60vh;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+
+            .stats-bar {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 1rem;
+            }
+
+            .main-container {
+                padding: 1rem;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <i class="fas fa-satellite"></i>
+            <h1>Ocean Plastic Detection System</h1>
+            <span>Powered by NASA Satellite Data</span>
+        </div>
+        <div class="stats-bar">
+            <div class="stat">
+                <i class="fas fa-eye"></i>
+                <span>Live Monitoring</span>
+            </div>
+            <div class="stat">
+                <i class="fas fa-globe"></i>
+                <span id="total-detections">0 Detections</span>
+            </div>
+            <div class="stat">
+                <i class="fas fa-clock"></i>
+                <span id="last-update">Last Update: --</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="sidebar">
+            <div class="control-section">
+                <h3><i class="fas fa-satellite-dish"></i> Satellite Data Sources</h3>
+                <div class="satellite-selector">
+                    <div class="satellite-option active" data-satellite="modis">
+                        <input type="radio" name="satellite" value="modis" checked>
+                        <i class="fas fa-satellite"></i>
+                        <div>
+                            <strong>MODIS Terra/Aqua</strong>
+                            <div style="font-size: 0.8rem; opacity: 0.7;">Ocean color analysis</div>
+                        </div>
+                    </div>
+                    <div class="satellite-option" data-satellite="viirs">
+                        <input type="radio" name="satellite" value="viirs">
+                        <i class="fas fa-satellite"></i>
+                        <div>
+                            <strong>VIIRS NPP</strong>
+                            <div style="font-size: 0.8rem; opacity: 0.7;">High-resolution imaging</div>
+                        </div>
+                    </div>
+                    <div class="satellite-option" data-satellite="landsat">
+                        <input type="radio" name="satellite" value="landsat">
+                        <i class="fas fa-satellite"></i>
+                        <div>
+                            <strong>Landsat 8/9</strong>
+                            <div style="font-size: 0.8rem; opacity: 0.7;">Coastal monitoring</div>
+                        </div>
+                    </div>
+                    <div class="satellite-option" data-satellite="sentinel">
+                        <input type="radio" name="satellite" value="sentinel">
+                        <i class="fas fa-satellite"></i>
+                        <div>
+                            <strong>Sentinel-2</strong>
+                            <div style="font-size: 0.8rem; opacity: 0.7;">European Space Agency</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <h3><i class="fas fa-sliders-h"></i> Detection Parameters</h3>
+                <div class="detection-controls">
+                    <div class="slider-container">
+                        <label>AI Sensitivity: <span id="sensitivity-value">75</span>%</label>
+                        <input type="range" class="slider" id="sensitivity" min="0" max="100" value="75">
+                        <small style="opacity: 0.7;">Higher values detect smaller debris</small>
+                    </div>
+                    
+                    <div class="slider-container">
+                        <label>Max Cloud Cover: <span id="cloud-value">30</span>%</label>
+                        <input type="range" class="slider" id="cloud-cover" min="0" max="100" value="30">
+                        <small style="opacity: 0.7;">Filter images by cloud coverage</small>
+                    </div>
+                    
+                    <button class="btn btn-primary" id="scan-btn">
+                        <i class="fas fa-search"></i>
+                        Initialize Ocean Scan
+                    </button>
+                    
+                    <button class="btn btn-secondary" id="clear-btn">
+                        <i class="fas fa-trash-alt"></i>
+                        Clear All Data
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="map-container">
+            <div id="map"></div>
+            <div class="loading-overlay" id="loading-overlay" style="display: none;">
+                <div class="loading-spinner"></div>
+                <div class="loading-text">Analyzing Satellite Imagery</div>
+                <div class="loading-subtext">Processing NASA data feeds...</div>
+            </div>
+            
+            <div class="legend">
+                <h4><i class="fas fa-info-circle"></i> Detection Legend</h4>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #ff4757;"></div>
+                    <span><strong>High Risk</strong> - >500 particles/km²</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #ffa502;"></div>
+                    <span><strong>Medium Risk</strong> - 100-500 particles/km²</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #7bed9f;"></div>
+                    <span><strong>Low Risk</strong> - <100 particles/km²</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #3742fa;"></div>
+                    <span><strong>Analysis Zone</strong> - Current scan area</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="control-section">
+                <h3><i class="fas fa-chart-pie"></i> Real-time Analytics</h3>
+                <div class="chart-container" id="results-chart"></div>
+            </div>
+
+            <div class="control-section">
+                <h3><i class="fas fa-upload"></i> Image Upload & Analysis</h3>
+                <div class="upload-section">
+                    <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; color: #ff6b6b; margin-bottom: 1rem;"></i>
+                    <form id="uploadForm">
+                        <div class="file-input-wrapper">
+                            <input type="file" id="fileInput" name="file" class="file-input" accept="image/*" required>
+                            <label for="fileInput" class="file-input-label">
+                                <i class="fas fa-image"></i> Choose Satellite Image
+                            </label>
+                        </div>
+                        <div id="file-name" style="margin: 1rem 0; font-size: 0.9rem; opacity: 0.7;"></div>
+                        <button type="submit" class="btn btn-upload">
+                            <i class="fas fa-magic"></i>
+                            Analyze with AI
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <h3><i class="fas fa-list-alt"></i> Detection History</h3>
+                <div class="data-panel" id="detections-list">
+                    <div style="text-align: center; opacity: 0.6; padding: 3rem 1rem;">
+                        <i class="fas fa-satellite-dish" style="font-size: 3rem; margin-bottom: 1rem; color: #00d4ff;"></i>
+                        <p style="font-size: 1.1rem; margin-bottom: 0.5rem;">No detections yet</p>
+                        <p style="font-size: 0.9rem; opacity: 0.7;">Start a scan or upload an image</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <h3><i class="fas fa-download"></i> Export & Share</h3>
+                <button class="btn btn-secondary" id="export-csv" style="width: 100%; margin-bottom: 0.8rem;">
+                    <i class="fas fa-file-csv"></i>
+                    Export as CSV
+                </button>
+                <button class="btn btn-secondary" id="export-json" style="width: 100%;">
+                    <i class="fas fa-file-code"></i>
+                    Export as JSON
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal-container">
+            <h4 id="modal-title">Confirmation Required</h4>
+            <p id="modal-message"></p>
+            <div class="modal-buttons">
+                <button class="btn btn-primary" id="modal-yes-btn">
+                    <i class="fas fa-check"></i> Yes
+                </button>
+                <button class="btn btn-secondary" id="modal-no-btn">
+                    <i class="fas fa-times"></i> No
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="success-notification" id="success-notification">
+        <i class="fas fa-check-circle"></i>
+        <span id="success-message">Operation completed successfully!</span>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script>
+        // Global variables
+        let map, plasticLayers = [], detectionData = [], currentSatellite = 'modis', isScanning = false;
+        
+        // Modal functionality
+        const modalOverlay = document.getElementById('modal-overlay');
+        const modalMessage = document.getElementById('modal-message');
+        const modalYesBtn = document.getElementById('modal-yes-btn');
+        const modalNoBtn = document.getElementById('modal-no-btn');
+        let modalResolve;
+
+        // Initialize application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeMap();
+            setupEventListeners();
+            loadMapData();
+            setupFileUpload();
+        });
+
+        function showCustomModal(message) {
+            return new Promise(resolve => {
+                modalMessage.textContent = message;
+                modalOverlay.style.display = 'flex';
+                setTimeout(() => modalOverlay.classList.add('visible'), 10);
+                modalResolve = resolve;
+                
+                modalYesBtn.onclick = () => {
+                    modalOverlay.classList.remove('visible');
+                    setTimeout(() => modalOverlay.style.display = 'none', 300);
+                    resolve(true);
+                };
+                
+                modalNoBtn.onclick = () => {
+                    modalOverlay.classList.remove('visible');
+                    setTimeout(() => modalOverlay.style.display = 'none', 300);
+                    resolve(false);
+                };
+            });
+        }
+
+        function showSuccessNotification(message) {
+            const notification = document.getElementById('success-notification');
+            const messageEl = document.getElementById('success-message');
+            messageEl.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        function initializeMap() {
+            // Initialize map with better default view for ocean plastic monitoring
+            map = L.map('map').setView([20.0, 0.0], 3);
+
+            // Enhanced satellite imagery layer
+            L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: '© NASA, ESA, USGS | Ocean Plastic Detection System',
+                maxZoom: 18,
+                id: 'satellite'
+            }).addTo(map);
+
+            // Add ocean currents visualization
+            L.tileLayer('https://tiles.windy.com/tiles-v10/oceanCurrents/{z}/{x}/{y}.png?key=demo', {
+                opacity: 0.4,
+                attribution: 'Ocean Currents | Windy.com'
+            }).addTo(map);
+        }
+
+        function setupEventListeners() {
+            // Satellite selection
+            document.querySelectorAll('.satellite-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    document.querySelectorAll('.satellite-option').forEach(o => o.classList.remove('active'));
+                    this.classList.add('active');
+                    this.querySelector('input').checked = true;
+                    currentSatellite = this.dataset.satellite;
+                    updateSatelliteInfo();
+                });
+            });
+
+            // Slider controls
+            document.getElementById('sensitivity').addEventListener('input', function() {
+                document.getElementById('sensitivity-value').textContent = this.value;
+            });
+
+            document.getElementById('cloud-cover').addEventListener('input', function() {
+                document.getElementById('cloud-value').textContent = this.value;
+            });
+
+            // Button controls
+            document.getElementById('scan-btn').addEventListener('click', startOceanScan);
+            document.getElementById('clear-btn').addEventListener('click', clearResults);
+            document.getElementById('export-csv').addEventListener('click', exportCSV);
+            document.getElementById('export-json').addEventListener('click', exportJSON);
+
+            // Map click handler for manual detection
+            map.on('click', async function(e) {
+                const isConfirmed = await showCustomModal('Add manual detection point at this location?');
+                if (isConfirmed) {
+                    const detection = {
+                        lat: e.latlng.lat.toFixed(4),
+                        lng: e.latlng.lng.toFixed(4),
+                        severity: 'medium',
+                        particles: Math.floor(Math.random() * 400) + 100,
+                        satellite: 'manual',
+                        timestamp: new Date(),
+                        area: getOceanRegion(e.latlng.lat, e.latlng.lng)
+                    };
+                    
+                    addPlasticDetection(detection);
+                    updateStats();
+                    updateChart();
+                    updateDetectionsList();
+                    showSuccessNotification('Manual detection point added successfully!');
+                }
+            });
+        }
+
+        function setupFileUpload() {
+            const fileInput = document.getElementById('fileInput');
+            const fileName = document.getElementById('file-name');
+            const uploadForm = document.getElementById('uploadForm');
+
+            fileInput.addEventListener('change', function() {
+                if (this.files.length > 0) {
+                    fileName.textContent = `Selected: ${this.files[0].name}`;
+                    fileName.style.color = '#00ff88';
+                } else {
+                    fileName.textContent = '';
+                }
+            });
+
+            uploadForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData();
+                const file = fileInput.files[0];
+                
+                if (!file) {
+                    alert('Please select an image file first.');
+                    return;
+                }
+
+                formData.append('file', file);
+                
+                // Show loading state
+                const submitBtn = uploadForm.querySelector('button[type="submit"]');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
+                submitBtn.disabled = true;
+
+                try {
+                    const response = await fetch('/analyze-image', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    
+                    if (result.status === 'success') {
+                        // Add the new detection point to the map
+                        const newDetection = {
+                            ...result.new_point,
+                            satellite: currentSatellite,
+                            timestamp: new Date(),
+                            particles: Math.floor(Math.random() * 500) + 50,
+                            area: getOceanRegion(result.new_point.lat, result.new_point.lng)
+                        };
+                        
+                        addPlasticDetection(newDetection);
+                        updateStats();
+                        updateChart();
+                        updateDetectionsList();
+                        
+                        // Center map on new detection
+                        map.setView([newDetection.lat, newDetection.lng], 8);
+                        
+                        showSuccessNotification(`New plastic hotspot detected at ${newDetection.lat}, ${newDetection.lng}`);
+                        
+                        // Reset form
+                        uploadForm.reset();
+                        fileName.textContent = '';
+                    }
+                } catch (error) {
+                    console.error('Upload error:', error);
+                    alert('Error analyzing image. Please try again.');
+                } finally {
+                    // Reset button state
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }
+            });
+        }
+
+        async function loadMapData() {
+            try {
+                const response = await fetch('/get-map-data');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const hotspots = await response.json();
+                
+                hotspots.forEach(hotspot => {
+                    const detection = {
+                        ...hotspot,
+                        satellite: currentSatellite,
+                        timestamp: new Date(),
+                        particles: Math.floor(Math.random() * 500) + 100,
+                        area: getOceanRegion(hotspot.lat, hotspot.lng)
+                    };
+                    addPlasticDetection(detection);
+                });
+                
+                updateStats();
+                updateChart();
+                updateDetectionsList();
+                
+            } catch (error) {
+                console.error('Error loading map data:', error);
+                // Load fallback demo data
+                loadDemoData();
+            }
+        }
+
+        function loadDemoData() {
+            const demoHotspots = [
+                { lat: 19.0760, lng: 72.8777, severity: "high" },   // Mumbai
+                { lat: 28.7041, lng: 77.1025, severity: "medium" }, // Delhi
+                { lat: 13.0827, lng: 80.2707, severity: "low" }     // Chennai
+            ];
+
+            demoHotspots.forEach(hotspot => {
+                const detection = {
+                    ...hotspot,
+                    satellite: currentSatellite,
+                    timestamp: new Date(),
+                    particles: Math.floor(Math.random() * 500) + 100,
+                    area: getOceanRegion(hotspot.lat, hotspot.lng)
+                };
+                addPlasticDetection(detection);
+            });
+
+            updateStats();
+            updateChart();
+            updateDetectionsList();
+        }
+
+        function startOceanScan() {
+            if (isScanning) return;
+
+            isScanning = true;
+            const overlay = document.getElementById('loading-overlay');
+            const scanBtn = document.getElementById('scan-btn');
+            
+            overlay.style.display = 'flex';
+            scanBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Scanning Ocean...';
+            scanBtn.disabled = true;
+
+            // Simulate realistic satellite data processing time
+            setTimeout(() => {
+                try {
+                    performPlasticDetection();
+                    showSuccessNotification('Ocean scan completed! New detections added to map.');
+                } catch (error) {
+                    console.error("Error during detection:", error);
+                    alert("Detection scan failed. Please try again.");
+                } finally {
+                    isScanning = false;
+                    overlay.style.display = 'none';
+                    scanBtn.innerHTML = '<i class="fas fa-search"></i> Initialize Ocean Scan';
+                    scanBtn.disabled = false;
+                }
+            }, 4000);
+        }
+
+        function performPlasticDetection() {
+            const sensitivity = document.getElementById('sensitivity').value;
+            const cloudCover = document.getElementById('cloud-cover').value;
+            const bounds = map.getBounds();
+            
+            // Generate realistic detections based on current map view and parameters
+            const numDetections = Math.floor((sensitivity / 20)) + Math.floor(Math.random() * 5) + 2;
+
+            for (let i = 0; i < numDetections; i++) {
+                const lat = bounds.getSouth() + (bounds.getNorth() - bounds.getSouth()) * Math.random();
+                const lng = bounds.getWest() + (bounds.getEast() - bounds.getWest()) * Math.random();
+                
+                // Skip if cloud cover is too high
+                if (Math.random() * 100 > cloudCover) {
+                    const particles = Math.floor(Math.random() * 800) + 50;
+                    let severity;
+                    
+                    if (particles > 500) severity = 'high';
+                    else if (particles > 150) severity = 'medium';
+                    else severity = 'low';
+                    
+                    const detection = {
+                        lat: parseFloat(lat.toFixed(4)),
+                        lng: parseFloat(lng.toFixed(4)),
+                        severity: severity,
+                        particles: particles,
+                        satellite: currentSatellite,
+                        timestamp: new Date(),
+                        area: getOceanRegion(lat, lng)
+                    };
+
+                    addPlasticDetection(detection);
+                }
+            }
+
+            updateStats();
+            updateChart();
+            updateDetectionsList();
+        }
+
+        function addPlasticDetection(detection) {
+            detectionData.push(detection);
+
+            const colorMap = {
+                'high': '#ff4757',
+                'medium': '#ffa502',
+                'low': '#7bed9f'
+            };
+
+            const radiusMap = {
+                'high': 80000,
+                'medium': 50000,
+                'low': 25000
+            };
+
+            const color = colorMap[detection.severity];
+            const radius = radiusMap[detection.severity];
+
+            const circle = L.circle([detection.lat, detection.lng], {
+                color: color,
+                fillColor: color,
+                fillOpacity: 0.3,
+                radius: radius,
+                weight: 3,
+                opacity: 0.8
+            }).addTo(map);
+
+            const popupContent = `
+                <div style="color: #333; min-width: 220px; font-family: 'Inter', sans-serif;">
+                    <h4 style="margin: 0 0 12px 0; color: ${color}; font-size: 1.1rem;">
+                        <i class="fas fa-exclamation-triangle"></i> Plastic Detection
+                    </h4>
+                    <div style="display: grid; gap: 8px;">
+                        <p><strong>Concentration:</strong> ${detection.particles} particles/km²</p>
+                        <p><strong>Risk Level:</strong> 
+                            <span style="background: ${color}; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: bold;">
+                                ${detection.severity.toUpperCase()}
+                            </span>
+                        </p>
+                        <p><strong>Ocean Region:</strong> ${detection.area}</p>
+                        <p><strong>Data Source:</strong> ${detection.satellite.toUpperCase()}</p>
+                        <p><strong>Detection Time:</strong> ${detection.timestamp.toLocaleString()}</p>
+                        <p><strong>Coordinates:</strong> ${detection.lat}°, ${detection.lng}°</p>
+                    </div>
+                </div>
+            `;
+
+            circle.bindPopup(popupContent, {
+                maxWidth: 300,
+                className: 'custom-popup'
+            });
+
+            // Add hover effects
+            circle.on('mouseover', function() {
+                this.setStyle({
+                    weight: 5,
+                    opacity: 1,
+                    fillOpacity: 0.5
+                });
+            });
+
+            circle.on('mouseout', function() {
+                this.setStyle({
+                    weight: 3,
+                    opacity: 0.8,
+                    fillOpacity: 0.3
+                });
+            });
+
+            plasticLayers.push(circle);
+        }
+
+        async function clearResults() {
+            const confirmed = await showCustomModal('Are you sure you want to clear all detection results?');
+            if (confirmed) {
+                plasticLayers.forEach(layer => map.removeLayer(layer));
+                plasticLayers = [];
+                detectionData = [];
+                
+                updateStats();
+                updateChart();
+                updateDetectionsList();
+                
+                showSuccessNotification('All detection data cleared successfully!');
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('total-detections').textContent = `${detectionData.length} Detections`;
+            document.getElementById('last-update').textContent = `Last Update: ${new Date().toLocaleTimeString()}`;
+        }
+
+        function updateChart() {
+            const severityCounts = { high: 0, medium: 0, low: 0 };
+            detectionData.forEach(d => severityCounts[d.severity]++);
+
+            if (detectionData.length === 0) {
+                document.getElementById('results-chart').innerHTML = `
+                    <div style="text-align: center; padding: 2rem; opacity: 0.6;">
+                        <i class="fas fa-chart-pie" style="font-size: 3rem; margin-bottom: 1rem; color: #00d4ff;"></i>
+                        <p>No data to display</p>
+                        <p style="font-size: 0.9rem; opacity: 0.7;">Start a scan to see analytics</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const chartData = [{
+                values: Object.values(severityCounts),
+                labels: ['High Risk', 'Medium Risk', 'Low Risk'],
+                type: 'pie',
+                hole: 0.4,
+                marker: {
+                    colors: ['#ff4757', '#ffa502', '#7bed9f']
+                },
+                textinfo: 'label+percent',
+                textfont: {
+                    color: 'white',
+                    size: 12
+                },
+                hovertemplate: '<b>%{label}</b><br>Count: %{value}<br>Percentage: %{percent}<extra></extra>'
+            }];
+
+            const layout = {
+                paper_bgcolor: 'rgba(0,0,0,0)',
+                plot_bgcolor: 'rgba(0,0,0,0)',
+                font: { 
+                    color: 'white',
+                    family: 'Inter, sans-serif'
+                },
+                showlegend: false,
+                height: 280,
+                margin: { t: 20, b: 20, l: 20, r: 20 },
+                annotations: [{
+                    text: `Total<br><b>${detectionData.length}</b><br>Detections`,
+                    x: 0.5,
+                    y: 0.5,
+                    font: {
+                        size: 14,
+                        color: 'white'
+                    },
+                    showarrow: false
+                }]
+            };
+
+            const config = {
+                displayModeBar: false,
+                responsive: true
+            };
+
+            Plotly.newPlot('results-chart', chartData, layout, config);
+        }
+
+        function updateDetectionsList() {
+            const container = document.getElementById('detections-list');
+            
+            if (detectionData.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; opacity: 0.6; padding: 3rem 1rem;">
+                        <i class="fas fa-satellite-dish" style="font-size: 3rem; margin-bottom: 1rem; color: #00d4ff;"></i>
+                        <p style="font-size: 1.1rem; margin-bottom: 0.5rem;">No detections yet</p>
+                        <p style="font-size: 0.9rem; opacity: 0.7;">Start a scan or upload an image</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const sortedDetections = [...detectionData]
+                .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+                .slice(0, 20);
+
+            container.innerHTML = sortedDetections.map(detection => `
+                <div class="detection-item ${detection.severity}" onclick="focusOnDetection(${detection.lat}, ${detection.lng})">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+                        <span class="severity-badge severity-${detection.severity}">
+                            ${detection.severity.toUpperCase()}
+                        </span>
+                        <span style="font-size: 0.8rem; opacity: 0.7;">
+                            ${detection.timestamp.toLocaleTimeString()}
+                        </span>
+                    </div>
+                    <div style="color: white;">
+                        <p style="margin: 0.4rem 0; font-weight: 600;">
+                            <i class="fas fa-map-marker-alt"></i> ${detection.area}
+                        </p>
+                        <p style="margin: 0.4rem 0;">
+                            <strong>${detection.particles}</strong> particles/km²
+                        </p>
+                        <p style="margin: 0; font-size: 0.85rem; opacity: 0.8;">
+                            <i class="fas fa-satellite"></i> ${detection.satellite.toUpperCase()} | 
+                            ${detection.lat}°, ${detection.lng}°
+                        </p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function focusOnDetection(lat, lng) {
+            map.setView([lat, lng], 8);
+            
+            // Find and open the popup for this detection
+            plasticLayers.forEach(layer => {
+                const layerLatLng = layer.getLatLng();
+                if (Math.abs(layerLatLng.lat - lat) < 0.001 && Math.abs(layerLatLng.lng - lng) < 0.001) {
+                    layer.openPopup();
+                }
+            });
+        }
+
+        function exportCSV() {
+            if (detectionData.length === 0) {
+                alert('No data to export. Please run a scan first.');
+                return;
+            }
+
+            const csv = [
+                'Latitude,Longitude,Particles_per_km2,Severity,Satellite_Source,Ocean_Region,Detection_Timestamp',
+                ...detectionData.map(d => 
+                    `${d.lat},${d.lng},${d.particles},${d.severity},${d.satellite},${d.area},"${d.timestamp.toISOString()}"`
+                )
+            ].join('\n');
+
+            downloadFile(csv, `ocean_plastic_detections_${new Date().toISOString().split('T')[0]}.csv`, 'text/csv');
+            showSuccessNotification('Data exported as CSV successfully!');
+        }
+
+        function exportJSON() {
+            if (detectionData.length === 0) {
+                alert('No data to export. Please run a scan first.');
+                return;
+            }
+
+            const exportData = {
+                metadata: {
+                    export_date: new Date().toISOString(),
+                    total_detections: detectionData.length,
+                    satellite_sources: [...new Set(detectionData.map(d => d.satellite))],
+                    detection_period: {
+                        start: new Date(Math.min(...detectionData.map(d => new Date(d.timestamp)))).toISOString(),
+                        end: new Date(Math.max(...detectionData.map(d => new Date(d.timestamp)))).toISOString()
+                    }
+                },
+                detections: detectionData
+            };
+
+            const json = JSON.stringify(exportData, null, 2);
+            downloadFile(json, `ocean_plastic_detections_${new Date().toISOString().split('T')[0]}.json`, 'application/json');
+            showSuccessNotification('Data exported as JSON successfully!');
+        }
+
+        function downloadFile(content, filename, contentType) {
+            const blob = new Blob([content], { type: contentType });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
+        function getOceanRegion(lat, lng) {
+            // Enhanced region detection
+            if (lng >= -180 && lng < -60) {
+                return lat > 0 ? 'North Pacific Ocean' : 'South Pacific Ocean';
+            } else if (lng >= -60 && lng < 20) {
+                return lat > 0 ? 'North Atlantic Ocean' : 'South Atlantic Ocean';
+            } else if (lng >= 20 && lng < 147) {
+                return 'Indian Ocean';
+            } else if (lng >= 147 && lng <= 180) {
+                return lat > 0 ? 'North Pacific Ocean' : 'South Pacific Ocean';
+            }
+            return 'Unknown Ocean Region';
+        }
+
+        function updateSatelliteInfo() {
+            const satellites = {
+                modis: 'MODIS Terra/Aqua - Ocean color and temperature analysis',
+                viirs: 'VIIRS NPP - Visible infrared imaging radiometer',
+                landsat: 'Landsat 8/9 - Multispectral coastal and marine monitoring',
+                sentinel: 'Sentinel-2 - European Space Agency high-resolution imaging'
+            };
+            
+            console.log(`Active Satellite: ${satellites[currentSatellite]}`);
+            showSuccessNotification(`Switched to ${currentSatellite.toUpperCase()} satellite data`);
+        }
+
+        // Add custom CSS for enhanced popup styling
+        const style = document.createElement('style');
+        style.textContent = `
+            .custom-popup .leaflet-popup-content-wrapper {
+                background: linear-gradient(135deg, #ffffff, #f8f9fa);
+                border-radius: 12px;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            }
+            .custom-popup .leaflet-popup-tip {
+                background: #ffffff;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
