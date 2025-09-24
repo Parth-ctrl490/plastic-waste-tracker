@@ -1,0 +1,2 @@
+cd C:\Users\HP\Desktop\jjgg\plastic-waste-tracker
+python app.py
