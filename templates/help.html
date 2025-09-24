@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ocean Plastic Detection System - Help</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #0f3460, #4a90e2, #50c9c3);
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+            animation: gradientShift 10s ease infinite, fadeIn 2s ease-in-out;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(22, 33, 62, 0.9);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.3), 0 0 30px rgba(80, 201, 195, 0.2);
+            transition: all 0.5s ease;
+            border: 2px solid #00d4ff;
+        }
+        .container:hover {
+            background: rgba(30, 42, 94, 1);
+            box-shadow: 0 0 25px rgba(0, 212, 255, 0.5), 0 0 40px rgba(80, 201, 195, 0.3);
+            transform: translateY(-5px);
+        }
+        h1 {
+            color: #00d4ff;
+            text-align: center;
+            animation: pulse 2s infinite, colorChange 5s infinite;
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.7);
+        }
+        .section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: linear-gradient(45deg, #16213e, #2a4066);
+            border-radius: 10px;
+            transition: transform 0.3s ease, background 0.5s ease, box-shadow 0.5s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        .section:hover {
+            transform: scale(1.02);
+            background: linear-gradient(45deg, #1e2a5e, #3a5e8c);
+            box-shadow: 0 5px 25px rgba(0, 212, 255, 0.4);
+        }
+        button {
+            background-color: #00d4ff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        button:hover {
+            background-color: #00b4d8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 180, 216, 0.4);
+        }
+        #faq {
+            padding: 10px;
+            background: linear-gradient(135deg, #2a4066, #4a709e);
+            border-radius: 5px;
+            animation: slideUp 0.5s ease, fadeInFAQ 1s ease;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+        #faq p {
+            margin: 10px 0;
+            color: #e0e0ff;
+            transition: color 0.3s ease;
+        }
+        #faq:hover p {
+            color: #c0c0ff;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes fadeInFAQ {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes gradientShift {
+            0% { background: linear-gradient(135deg, #1a1a2e, #0f3460, #4a90e2, #50c9c3); }
+            25% { background: linear-gradient(135deg, #0f3460, #4a90e2, #50c9c3, #1a1a2e); }
+            50% { background: linear-gradient(135deg, #4a90e2, #50c9c3, #1a1a2e, #0f3460); }
+            75% { background: linear-gradient(135deg, #50c9c3, #1a1a2e, #0f3460, #4a90e2); }
+            100% { background: linear-gradient(135deg, #1a1a2e, #0f3460, #4a90e2, #50c9c3); }
+        }
+        @keyframes colorChange {
+            0% { color: #00d4ff; }
+            50% { color: #50c9c3; }
+            100% { color: #00d4ff; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Ocean Plastic Detection System - Help</h1>
+        <div class="section">
+            <h2>Getting Started</h2>
+            <p>Welcome to the Ocean Plastic Detection System! This tool uses NASA satellite data to monitor ocean plastic levels. Use the Live Monitoring feature to view real-time maps and analytics.</p>
+        </div>
+        <div class="section">
+            <h2>Features</h2>
+            <ul>
+                <li><strong>Live Monitoring:</strong> View current plastic detection levels across the globe.</li>
+                <li><strong>Real-time Analytics:</strong> Check the breakdown of high, medium, and low-risk areas.</li>
+                <li><strong>Image Upload & Analysis:</strong> Upload images for additional analysis.</li>
+            </ul>
+        </div>
+        <div class="section">
+            <h2>Detection Theory</h2>
+            <p>The Ocean Plastic Detection System leverages advanced remote sensing and artificial intelligence to identify and quantify plastic pollution in marine environments. The core theory is based on the interaction of light with plastic debris, which alters the spectral reflectance of ocean surfaces. Satellites such as MODIS and VIIRS NPP capture multi-spectral data across various wavelengths, particularly in the visible and near-infrared (NIR) spectrum, where plastic materials exhibit distinct reflectance signatures compared to natural water bodies or organic matter.</p>
+            <p>The detection process begins with ocean color analysis, utilizing data from Terra/Aqua satellites to measure chlorophyll concentration and water turbidity as baseline indicators. Plastic debris, due to its non-biodegradable nature, scatters light differently, creating anomalies detectable through these measurements. High-resolution imaging from VIIRS NPP and Landsat 8/9 enhances spatial accuracy, enabling the system to pinpoint coastal accumulation zones. Sentinel-2 data from the European Space Agency further refines this by providing frequent revisits and detailed coastal monitoring, crucial for tracking dynamic plastic movement driven by ocean currents.</p>
+            <p>The AI model integrates these datasets using a supervised learning approach, trained on historical satellite imagery annotated with ground-truth plastic concentration data. The model employs a 75% sensitivity threshold to balance false positives and negatives, classifying regions into risk levels based on particle density (particles/km²). The theoretical foundation also incorporates hydrodynamic modeling to predict plastic drift patterns, using wind and current data to forecast high-risk zones. This multi-layered approach ensures robust detection, though challenges such as cloud cover, wave interference, and small debris size remain areas of ongoing research and improvement.</p>
+        </div>
+        <div class="section">
+            <h2>FAQ</h2>
+            <button onclick="toggleFAQ()">Show FAQ</button>
+            <div id="faq" style="display: none;">
+                <p><strong>Q: How often is the data updated?</strong> A: Data is updated every 15 minutes.</p>
+                <p><strong>Q: What do the risk levels mean?</strong> A: High Risk (>500 particles/km²), Medium Risk (100-500 particles/km²), Low Risk (<100 particles/km²).</p>
+                <p><strong>Q: How does the AI detect plastics?</strong> A: The AI uses reflectance patterns and machine learning to identify plastic signatures in satellite data.</p>
+                <p><strong>Q: Why are some areas harder to detect?</strong> A: Cloud cover, waves, and small debris size can obscure satellite detection, affecting accuracy.</p>
+                <p><strong>Q: Can I contribute data to improve detection?</strong> A: Yes, uploading high-quality images via the Image Upload & Analysis feature helps refine the AI model.</p>
+                <p><strong>Q: How accurate is the system?</strong> A: Accuracy varies by region, with a 75% sensitivity threshold; accuracy improves with clear skies and larger debris.</p>
+                <p><strong>Q: What happens to the uploaded images?</strong> A: Uploaded images are analyzed for plastic detection and used to enhance the AI model, with data anonymized for privacy.</p>
+                <p><strong>Q: Can the system predict future plastic accumulation?</strong> A: Yes, it uses hydrodynamic modeling to forecast potential high-risk zones based on current and wind data.</p>
+            </div>
+        </div>
+    </div>
+    <script>
+        function toggleFAQ() {
+            const faq = document.getElementById('faq');
+            faq.style.display = faq.style.display === 'none' ? 'block' : 'none';
+        }
+    </script>
+</body>
+</html>

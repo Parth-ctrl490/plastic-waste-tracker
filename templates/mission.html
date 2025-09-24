@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="BlueMetrics is revolutionizing ocean conservation with AI-powered plastic detection technology using satellite imagery.">
+    <title>BlueMetrics - Mission & Goals</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0f1c;
+            color: white;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* Subtle Animated Background */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: -1;
+            background: linear-gradient(135deg, #0a0f1c 0%, #1a2332 25%, #2d3748 50%, #1a2b42 75%, #0f1419 100%);
+            background-size: 300% 300%;
+            animation: subtleGradient 15s ease infinite;
+        }
+
+        @keyframes subtleGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Ocean Wave Effects */
+        .wave-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 150px;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .wave {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 200%;
+            height: 80px;
+            background: linear-gradient(90deg, rgba(64, 165, 255, 0.1) 0%, rgba(34, 197, 94, 0.1) 50%, rgba(64, 165, 255, 0.1) 100%);
+            border-radius: 100% 100% 0 0;
+            animation: waveMotion 8s ease-in-out infinite;
+        }
+
+        .wave:nth-child(2) {
+            opacity: 0.7;
+            animation-duration: 10s;
+            animation-delay: -2s;
+            height: 60px;
+        }
+
+        .wave:nth-child(3) {
+            opacity: 0.5;
+            animation-duration: 12s;
+            animation-delay: -4s;
+            height: 40px;
+        }
+
+        @keyframes waveMotion {
+            0%, 100% { transform: translateX(-50%) rotate(0deg); }
+            50% { transform: translateX(-48%) rotate(1deg); }
+        }
+
+        /* Minimal Particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: rgba(64, 165, 255, 0.3);
+            border-radius: 50%;
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh);
+                opacity: 0;
+            }
+            10% { opacity: 0.7; }
+            90% { opacity: 0.7; }
+            100% {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(10, 15, 28, 0.3);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(64, 165, 255, 0.1);
+            z-index: 1000;
+            transition: background 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            background: rgba(10, 15, 28, 0.8);
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, #40a5ff, #22c55e);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #40a5ff;
+        }
+
+        /* Mobile Menu Toggle */
+        .menu-toggle {
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #40a5ff;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            padding: 2rem;
+        }
+
+        .hero-content {
+            max-width: 1000px;
+            animation: heroFadeIn 1.5s ease-out;
+        }
+
+        .hero-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 900;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(45deg, #40a5ff, #22c55e, #a855f7);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: textGradient 6s ease infinite;
+        }
+
+        @keyframes heroFadeIn {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes textGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1rem, 2.5vw, 1.6rem);
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 2rem;
+            font-weight: 300;
+        }
+
+        /* Mission Statement Section */
+        .mission-statement {
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .statement-card {
+            background: linear-gradient(135deg, rgba(64, 165, 255, 0.1), rgba(34, 197, 94, 0.08));
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 3rem;
+            border: 1px solid rgba(64, 165, 255, 0.2);
+            position: relative;
+        }
+
+        .statement-text {
+            font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 1.5rem;
+        }
+
+        .highlight {
+            background: linear-gradient(45deg, #40a5ff, #22c55e);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 600;
+        }
+
+        /* Goals Section */
+        .goals-section {
+            padding: 4rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(2rem, 4vw, 3rem);
+            text-align: center;
+            margin-bottom: 3rem;
+            background: linear-gradient(45deg, #40a5ff, #22c55e);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .goals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .goal-card {
+            background: linear-gradient(135deg, rgba(64, 165, 255, 0.08), rgba(34, 197, 94, 0.08));
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .goal-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(64, 165, 255, 0.2);
+        }
+
+        .goal-number {
+            display: inline-flex;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(45deg, #40a5ff, #22c55e);
+            border-radius: 50%;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        .goal-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #40a5ff;
+        }
+
+        .goal-description {
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .goal-features {
+            list-style: none;
+            padding: 0;
+        }
+
+        .goal-features li {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 0.8rem;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .goal-features li::before {
+            content: '✓';
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(45deg, #22c55e, #40a5ff);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        /* Impact Metrics */
+        .impact-section {
+            padding: 4rem 2rem;
+            background: linear-gradient(135deg, rgba(64, 165, 255, 0.05), rgba(34, 197, 94, 0.05));
+            margin: 2rem 0;
+        }
+
+        .impact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .impact-card {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 1px solid rgba(64, 165, 255, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .impact-card:hover {
+            transform: scale(1.03);
+        }
+
+        .impact-number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, #40a5ff, #22c55e);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 0.8rem;
+        }
+
+        .impact-label {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Timeline */
+        .timeline-section {
+            padding: 4rem 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 2.5rem;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0.8rem;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, #40a5ff, #22c55e);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: rgba(64, 165, 255, 0.05);
+            border-radius: 10px;
+            border-left: 3px solid #40a5ff;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -2.5rem;
+            top: 1.5rem;
+            width: 12px;
+            height: 12px;
+            background: #40a5ff;
+            border-radius: 50%;
+        }
+
+        .timeline-date {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            color: #40a5ff;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+        }
+
+        .timeline-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.8rem;
+            color: #22c55e;
+        }
+
+        .timeline-description {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.5;
+            font-size: 0.9rem;
+        }
+
+        /* Call to Action */
+        .cta-section {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: linear-gradient(135deg, rgba(64, 165, 255, 0.1), rgba(34, 197, 94, 0.1));
+            border-radius: 20px;
+            margin: 2rem;
+            border: 1px solid rgba(64, 165, 255, 0.2);
+        }
+
+        .cta-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            margin-bottom: 1.5rem;
+            background: linear-gradient(45deg, #40a5ff, #22c55e);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: linear-gradient(45deg, #40a5ff, #22c55e);
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .cta-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(64, 165, 255, 0.4);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .goals-grid { grid-template-columns: 1fr; }
+            .impact-grid { grid-template-columns: repeat(2, 1fr); }
+            .timeline { padding-left: 2rem; }
+            .timeline::before { left: 0.5rem; }
+            .timeline-item::before { left: -2rem; }
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: rgba(10, 15, 28, 0.9);
+                padding: 1rem;
+            }
+            .nav-links.active {
+                display: flex;
+            }
+            .menu-toggle { display: block; }
+        }
+
+        @media (max-width: 480px) {
+            .impact-grid { grid-template-columns: 1fr; }
+            .hero-title { font-size: clamp(2rem, 5vw, 3rem); }
+            .cta-section { margin: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Subtle Animated Background -->
+    <div class="animated-bg"></div>
+    
+    <!-- Ocean Waves -->
+    <div class="wave-container">
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+    </div>
+    
+    <!-- Particles -->
+    <div class="particles"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar" role="navigation" aria-label="Main navigation">
+        <div class="nav-content">
+            <div class="nav-brand">BlueMetrics</div>
+            <button class="menu-toggle" aria-label="Toggle navigation menu">☰</button>
+            <ul class="nav-links">
+                <li><a href="#mission" aria-label="Go to Mission section">Mission</a></li>
+                <li><a href="#goals" aria-label="Go to Goals section">Goals</a></li>
+                <li><a href="#impact" aria-label="Go to Impact section">Impact</a></li>
+                <li><a href="#timeline" aria-label="Go to Timeline section">Timeline</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-content">
+            <h1 id="hero-title" class="hero-title">Our Mission & Goals</h1>
+            <p class="hero-subtitle">Revolutionizing ocean conservation through AI-powered plastic detection technology</p>
+        </div>
+    </section>
+
+    <!-- Mission Statement -->
+    <section id="mission" class="mission-statement" aria-labelledby="mission-title">
+        <h2 id="mission-title" class="section-title">Our Mission</h2>
+        <div class="statement-card">
+            <p class="statement-text">
+                To <span class="highlight">revolutionize marine conservation</span> by developing cutting-edge AI technology that detects, maps, and monitors plastic pollution in our oceans. We aim to create a <span class="highlight">comprehensive satellite-based system</span> that provides real-time environmental intelligence to researchers, policymakers, and conservationists worldwide.
+            </p>
+            <p class="statement-text">
+                Through our innovative approach combining <span class="highlight">NASA satellite imagery with machine learning</span>, we're building the future of ocean monitoring - one pixel at a time.
+            </p>
+        </div>
+    </section>
+
+    <!-- Goals Section -->
+    <section id="goals" class="goals-section" aria-labelledby="goals-title">
+        <h2 id="goals-title" class="section-title">Strategic Goals</h2>
+        <div class="goals-grid">
+            <div class="goal-card">
+                <div class="goal-number">1</div>
+                <h3 class="goal-title">Advanced Detection System</h3>
+                <p class="goal-description">Develop a state-of-the-art AI model capable of identifying plastic debris in marine environments with 95%+ accuracy using satellite imagery.</p>
+                <ul class="goal-features">
+                    <li>Multi-spectral image analysis</li>
+                    <li>Deep learning object detection</li>
+                    <li>Real-time processing capabilities</li>
+                    <li>Cloud-based infrastructure</li>
+                </ul>
+            </div>
+            <div class="goal-card">
+                <div class="goal-number">2</div>
+                <h3 class="goal-title">Global Mapping Platform</h3>
+                <p class="goal-description">Create an interactive web platform that visualizes plastic pollution hotspots and trends across rivers, lakes, and coastal areas worldwide.</p>
+                <ul class="goal-features">
+                    <li>Interactive pollution heat maps</li>
+                    <li>Historical trend analysis</li>
+                    <li>Mobile-responsive design</li>
+                    <li>Open-source data API</li>
+                </ul>
+            </div>
+            <div class="goal-card">
+                <div class="goal-number">3</div>
+                <h3 class="goal-title">Scientific Collaboration</h3>
+                <p class="goal-description">Partner with marine research institutions and environmental organizations to validate our findings and expand the dataset.</p>
+                <ul class="goal-features">
+                    <li>Academic research partnerships</li>
+                    <li>Peer-reviewed publications</li>
+                    <li>Open data sharing protocols</li>
+                    <li>Citizen science integration</li>
+                </ul>
+            </div>
+            <div class="goal-card">
+                <div class="goal-number">4</div>
+                <h3 class="goal-title">Policy Impact</h3>
+                <p class="goal-description">Provide actionable insights to governments and NGOs to inform evidence-based environmental policies and cleanup initiatives.</p>
+                <ul class="goal-features">
+                    <li>Policy recommendation reports</li>
+                    <li>Stakeholder engagement</li>
+                    <li>Impact assessment tools</li>
+                    <li>International collaboration</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Impact Metrics -->
+    <section id="impact" class="impact-section" aria-labelledby="impact-title">
+        <h2 id="impact-title" class="section-title">Expected Impact</h2>
+        <div class="impact-grid">
+            <div class="impact-card">
+                <div class="impact-number">95%</div>
+                <div class="impact-label">Detection Accuracy</div>
+            </div>
+            <div class="impact-card">
+                <div class="impact-number">1000+</div>
+                <div class="impact-label">Coastal Areas Monitored</div>
+            </div>
+            <div class="impact-card">
+                <div class="impact-number">24/7</div>
+                <div class="impact-label">Real-time Monitoring</div>
+            </div>
+            <div class="impact-card">
+                <div class="impact-number">100+</div>
+                <div class="impact-label">Research Partners</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Timeline -->
+    <section id="timeline" class="timeline-section" aria-labelledby="timeline-title">
+        <h2 id="timeline-title" class="section-title">Development Timeline</h2>
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-date">Phase 1 - Research & Development</div>
+                <div class="timeline-title">Foundation Building</div>
+                <div class="timeline-description">Conduct comprehensive literature review, gather training datasets, and develop initial AI models for plastic detection in satellite imagery.</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-date">Phase 2 - Prototype Development</div>
+                <div class="timeline-title">MVP Creation</div>
+                <div class="timeline-description">Build minimum viable product with core detection capabilities, initial web interface, and basic mapping functionality.</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-date">Phase 3 - Testing & Validation</div>
+                <div class="timeline-title">Accuracy Optimization</div>
+                <div class="timeline-description">Conduct field validation, refine algorithms, and collaborate with marine researchers to ensure scientific accuracy.</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-date">Phase 4 - Deployment & Scale</div>
+                <div class="timeline-title">Global Launch</div>
+                <div class="timeline-description">Deploy the platform globally, establish partnerships with environmental organizations, and begin continuous monitoring operations.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="cta-section" aria-labelledby="cta-title">
+        <h2 id="cta-title" class="cta-title">Join Our Mission</h2>
+        <p style="font-size: 1.2rem; margin-bottom: 1.5rem; color: rgba(255, 255, 255, 0.8);">
+            Help us protect our oceans with cutting-edge technology and collaborative innovation.
+        </p>
+        <a href="#contact" class="cta-button" aria-label="Partner with BlueMetrics">🌊 Partner With BlueMetrics</a>
+    </section>
+
+    <script>
+        // Create particles with responsive count
+        function createParticles() {
+            const particlesContainer = document.querySelector('.particles');
+            const particleCount = window.innerWidth < 768 ? 20 : 40;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (Math.random() * 10 + 15) + 's';
+                
+                if (i % 3 === 0) {
+                    particle.style.background = 'rgba(34, 197, 94, 0.3)';
+                } else if (i % 3 === 1) {
+                    particle.style.background = 'rgba(168, 85, 247, 0.2)';
+                }
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const navbar = document.querySelector('.navbar');
+            navbar.classList.toggle('scrolled', window.scrollY > 100);
+        });
+
+        // Mobile menu toggle
+        document.querySelector('.menu-toggle').addEventListener('click', () => {
+            const navLinks = document.querySelector('.nav-links');
+            navLinks.classList.toggle('active');
+        });
+
+        // Smooth scroll for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    if (window.innerWidth < 768) {
+                        document.querySelector('.nav-links').classList.remove('active');
+                    }
+                }
+            });
+        });
+
+        // Intersection Observer for animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.2 });
+
+        // Animate counters
+        function animateCounters() {
+            const counters = document.querySelectorAll('.impact-number');
+            counters.forEach(counter => {
+                const target = counter.textContent;
+                if (target.includes('/')) {
+                    return; // Skip 24/7
+                }
+                const finalNumber = parseInt(target.replace(/[+|%]/, ''));
+                const isPercentage = target.includes('%');
+                let currentNumber = 0;
+                const increment = finalNumber / 50;
+                const timer = setInterval(() => {
+                    currentNumber += increment;
+                    if (currentNumber >= finalNumber) {
+                        currentNumber = finalNumber;
+                        clearInterval(timer);
+                    }
+                    counter.textContent = Math.floor(currentNumber) + (isPercentage ? '%' : target.includes('+') ? '+' : '');
+                }, 50);
+            });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            createParticles();
+            document.querySelectorAll('.goal-card, .impact-card, .statement-card, .timeline-item').forEach(el => {
+                el.classList.add('animate');
+                observer.observe(el);
+            });
+
+            const impactSection = document.querySelector('.impact-section');
+            if (impactSection) {
+                new IntersectionObserver((entries) => {
+                    if (entries[0].isIntersecting) {
+                        animateCounters();
+                    }
+                }, { threshold: 0.5 }).observe(impactSection);
+            }
+        });
+
+        // Add hover effects
+        document.querySelectorAll('.goal-card').forEach(card => {
+            card.addEventListener('mouseenter', () => card.style.transform = 'translateY(-5px)');
+            card.addEventListener('mouseleave', () => card.style.transform = 'translateY(0)');
+        });
+
+        // Add click effects for impact cards
+        document.querySelectorAll('.impact-card').forEach(card => {
+            card.addEventListener('click', () => {
+                card.style.transform = 'scale(1.05)';
+                setTimeout(() => card.style.transform = 'scale(1)', 200);
+            });
+        });
+    </script>
+</body>
+</html>

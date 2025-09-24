@@ -15,10 +15,136 @@
 
         body {
             font-family: 'Inter', 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            background: transparent;
+            background-image: url("/static/pexels-pixabay-355465.jpg");
             color: #ffffff;
             overflow-x: hidden;
             position: relative;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 0.2; }
+        }
+
+        /* Animated background elements */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite alternate;
+        }
+
+        .star:nth-child(odd) {
+            animation-delay: 1s;
+        }
+
+        .star:nth-child(3n) {
+            animation-delay: 2s;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.3; transform: scale(1); }
+            100% { opacity: 1; transform: scale(1.2); }
+        }
+
+        .floating-orbs {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(0, 230, 118, 0.3), rgba(0, 188, 212, 0.1));
+            animation: float 8s infinite ease-in-out;
+        }
+
+        .orb:nth-child(1) { width: 60px; height: 60px; top: 20%; left: 10%; animation-delay: 0s; }
+        .orb:nth-child(2) { width: 40px; height: 40px; top: 70%; left: 80%; animation-delay: 2s; }
+        .orb:nth-child(3) { width: 80px; height: 80px; top: 40%; left: 85%; animation-delay: 4s; }
+        .orb:nth-child(4) { width: 30px; height: 30px; top: 80%; left: 20%; animation-delay: 1s; }
+        .orb:nth-child(5) { width: 50px; height: 50px; top: 10%; left: 70%; animation-delay: 3s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) translateX(0px) rotate(0deg); opacity: 0.3; }
+            25% { transform: translateY(-20px) translateX(10px) rotate(90deg); opacity: 0.6; }
+            50% { transform: translateY(-10px) translateX(-10px) rotate(180deg); opacity: 0.8; }
+            75% { transform: translateY(-30px) translateX(5px) rotate(270deg); opacity: 0.4; }
+        }
+
+        .intro-container {
+            text-align: center;
+            z-index: 10;
+            position: relative;
+            max-width: 600px;
+            padding: 40px;
+        }
+
+        .logo-container {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 40px;
+            position: relative;
+            opacity: 0;
+            animation: logoFadeIn 2s ease-out 0.5s forwards;
+        }
+
+        .logo-placeholder {
+            width: 100%;
+            height: 100%;
+            border: 3px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo-placeholder:hover {
+            border-color: #00e676;
+            background: rgba(0, 230, 118, 0.1);
+            transform: scale(1.05);
+            box-shadow: 0 20px 40px rgba(0, 230, 118, 0.3);
+        }
+
+        .logo-placeholder::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+            transform: rotate(45deg);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
         }
 
         body::before {
@@ -78,6 +204,11 @@
             font-size: 0.85rem;
             opacity: 0.7;
             font-weight: 400;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
         }
 
         .stats-bar {
@@ -253,7 +384,7 @@
         }
 
         .btn {
-            padding: 1rem 2rem;
+            padding: 0.8rem 1.5rem;
             border: none;
             border-radius: 12px;
             cursor: pointer;
@@ -266,6 +397,9 @@
             gap: 0.8rem;
             position: relative;
             overflow: hidden;
+            background: linear-gradient(135deg, #00d4ff, #00ff88);
+            color: #ffffff;
+            box-shadow: 0 4px 20px rgba(0, 212, 255, 0.3);
         }
 
         .btn::before {
@@ -283,15 +417,14 @@
             left: 100%;
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, #00d4ff, #00ff88);
-            color: #ffffff;
-            box-shadow: 0 4px 20px rgba(0, 212, 255, 0.3);
-        }
-
-        .btn-primary:hover {
+        .btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 8px 30px rgba(0, 212, 255, 0.5);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
         }
 
         .btn-secondary {
@@ -633,6 +766,11 @@
                 gap: 1rem;
             }
 
+            .nav-buttons {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
             .main-container {
                 padding: 1rem;
                 gap: 1rem;
@@ -646,6 +784,23 @@
             <i class="fas fa-satellite"></i>
             <h1>Ocean Plastic Detection System</h1>
             <span>Powered by NASA Satellite Data</span>
+        </div>
+        <div class="nav-buttons">
+            <a href="/help" class="btn">
+                <i class="fas fa-question-circle"></i> Help
+            </a>
+            <a href="https://earthobservatory.nasa.gov/images/149163/mapping-marine-microplastics" class="btn">
+                <i class="fas fa-book"></i> NASA Article
+            </a>
+            <a href="/aboutus" class="btn">
+                <i class="fas fa-users"></i> About Us
+            </a>
+            <a href="/info" class="btn">
+                <i class="fas fa-info-circle"></i> Features
+            </a>
+            <a href="/mission" class="btn">
+                <i class="fas fa-rocket"></i> Our Mission
+            </a>
         </div>
         <div class="stats-bar">
             <div class="stat">
@@ -885,17 +1040,12 @@
         }
 
         function initializeMap() {
-            // Initialize map with better default view for ocean plastic monitoring
             map = L.map('map').setView([20.0, 0.0], 3);
-
-            // Enhanced satellite imagery layer
             L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
                 attribution: '© NASA, ESA, USGS | Ocean Plastic Detection System',
                 maxZoom: 18,
                 id: 'satellite'
             }).addTo(map);
-
-            // Add ocean currents visualization
             L.tileLayer('https://tiles.windy.com/tiles-v10/oceanCurrents/{z}/{x}/{y}.png?key=demo', {
                 opacity: 0.4,
                 attribution: 'Ocean Currents | Windy.com'
@@ -903,7 +1053,6 @@
         }
 
         function setupEventListeners() {
-            // Satellite selection
             document.querySelectorAll('.satellite-option').forEach(option => {
                 option.addEventListener('click', function() {
                     document.querySelectorAll('.satellite-option').forEach(o => o.classList.remove('active'));
@@ -914,7 +1063,6 @@
                 });
             });
 
-            // Slider controls
             document.getElementById('sensitivity').addEventListener('input', function() {
                 document.getElementById('sensitivity-value').textContent = this.value;
             });
@@ -923,13 +1071,11 @@
                 document.getElementById('cloud-value').textContent = this.value;
             });
 
-            // Button controls
             document.getElementById('scan-btn').addEventListener('click', startOceanScan);
             document.getElementById('clear-btn').addEventListener('click', clearResults);
             document.getElementById('export-csv').addEventListener('click', exportCSV);
             document.getElementById('export-json').addEventListener('click', exportJSON);
 
-            // Map click handler for manual detection
             map.on('click', async function(e) {
                 const isConfirmed = await showCustomModal('Add manual detection point at this location?');
                 if (isConfirmed) {
@@ -979,7 +1125,6 @@
 
                 formData.append('file', file);
                 
-                // Show loading state
                 const submitBtn = uploadForm.querySelector('button[type="submit"]');
                 const originalText = submitBtn.innerHTML;
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
@@ -998,7 +1143,6 @@
                     const result = await response.json();
                     
                     if (result.status === 'success') {
-                        // Add the new detection point to the map
                         const newDetection = {
                             ...result.new_point,
                             satellite: currentSatellite,
@@ -1012,12 +1156,10 @@
                         updateChart();
                         updateDetectionsList();
                         
-                        // Center map on new detection
                         map.setView([newDetection.lat, newDetection.lng], 8);
                         
                         showSuccessNotification(`New plastic hotspot detected at ${newDetection.lat}, ${newDetection.lng}`);
                         
-                        // Reset form
                         uploadForm.reset();
                         fileName.textContent = '';
                     }
@@ -1025,7 +1167,6 @@
                     console.error('Upload error:', error);
                     alert('Error analyzing image. Please try again.');
                 } finally {
-                    // Reset button state
                     submitBtn.innerHTML = originalText;
                     submitBtn.disabled = false;
                 }
@@ -1059,16 +1200,15 @@
                 
             } catch (error) {
                 console.error('Error loading map data:', error);
-                // Load fallback demo data
                 loadDemoData();
             }
         }
 
         function loadDemoData() {
             const demoHotspots = [
-                { lat: 19.0760, lng: 72.8777, severity: "high" },   // Mumbai
-                { lat: 28.7041, lng: 77.1025, severity: "medium" }, // Delhi
-                { lat: 13.0827, lng: 80.2707, severity: "low" }     // Chennai
+                { lat: 19.0760, lng: 72.8777, severity: "high" },
+                { lat: 28.7041, lng: 77.1025, severity: "medium" },
+                { lat: 13.0827, lng: 80.2707, severity: "low" }
             ];
 
             demoHotspots.forEach(hotspot => {
@@ -1098,7 +1238,6 @@
             scanBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Scanning Ocean...';
             scanBtn.disabled = true;
 
-            // Simulate realistic satellite data processing time
             setTimeout(() => {
                 try {
                     performPlasticDetection();
@@ -1120,14 +1259,12 @@
             const cloudCover = document.getElementById('cloud-cover').value;
             const bounds = map.getBounds();
             
-            // Generate realistic detections based on current map view and parameters
             const numDetections = Math.floor((sensitivity / 20)) + Math.floor(Math.random() * 5) + 2;
 
             for (let i = 0; i < numDetections; i++) {
                 const lat = bounds.getSouth() + (bounds.getNorth() - bounds.getSouth()) * Math.random();
                 const lng = bounds.getWest() + (bounds.getEast() - bounds.getWest()) * Math.random();
                 
-                // Skip if cloud cover is too high
                 if (Math.random() * 100 > cloudCover) {
                     const particles = Math.floor(Math.random() * 800) + 50;
                     let severity;
@@ -1207,7 +1344,6 @@
                 className: 'custom-popup'
             });
 
-            // Add hover effects
             circle.on('mouseover', function() {
                 this.setStyle({
                     weight: 5,
@@ -1355,7 +1491,6 @@
         function focusOnDetection(lat, lng) {
             map.setView([lat, lng], 8);
             
-            // Find and open the popup for this detection
             plasticLayers.forEach(layer => {
                 const layerLatLng = layer.getLatLng();
                 if (Math.abs(layerLatLng.lat - lat) < 0.001 && Math.abs(layerLatLng.lng - lng) < 0.001) {
@@ -1418,7 +1553,6 @@
         }
 
         function getOceanRegion(lat, lng) {
-            // Enhanced region detection
             if (lng >= -180 && lng < -60) {
                 return lat > 0 ? 'North Pacific Ocean' : 'South Pacific Ocean';
             } else if (lng >= -60 && lng < 20) {
@@ -1443,7 +1577,6 @@
             showSuccessNotification(`Switched to ${currentSatellite.toUpperCase()} satellite data`);
         }
 
-        // Add custom CSS for enhanced popup styling
         const style = document.createElement('style');
         style.textContent = `
             .custom-popup .leaflet-popup-content-wrapper {

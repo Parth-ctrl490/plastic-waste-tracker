@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlueMetrics - Ocean Guardians</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0f1c;
+            color: white;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* Subtle Animated Background */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: -1;
+            background: 
+                linear-gradient(135deg, #0a0f1c 0%, #1a2332 25%, #2d3748 50%, #1a2b42 75%, #0f1419 100%);
+            background-size: 300% 300%;
+            animation: subtleGradient 12s ease infinite;
+        }
+
+        @keyframes subtleGradient {
+            0% { background-position: 0% 50%; }
+            25% { background-position: 50% 25%; }
+            50% { background-position: 100% 50%; }
+            75% { background-position: 50% 75%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Minimal Particle System */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(64, 165, 255, 0.4);
+            border-radius: 50%;
+            animation: float 20s infinite linear;
+        }
+
+        .particle:nth-child(odd) {
+            background: rgba(34, 197, 94, 0.3);
+            animation-duration: 25s;
+        }
+
+        .particle:nth-child(3n) {
+            background: rgba(168, 162, 255, 0.2);
+            animation-duration: 15s;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(10, 15, 28, 0.3);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(64, 165, 255, 0.1);
+            z-index: 1000;
+            transition: all 0.4s ease;
+        }
+
+        .navbar.scrolled {
+            background: rgba(10, 15, 28, 0.9);
+            transform: translateY(0);
+        }
+
+        .nav-brand {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, #40a5ff, #22c55e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            padding: 2rem;
+        }
+
+        .hero-content {
+            max-width: 900px;
+            animation: heroFadeIn 2s ease-out;
+        }
+
+        .hero-title {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #40a5ff, #22c55e, #a855f7);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: textGradient 6s ease infinite, titleBounce 1s ease-out 0.5s both;
+        }
+
+        @keyframes textGradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes titleBounce {
+            0% { transform: translateY(50px); opacity: 0; }
+            60% { transform: translateY(-10px); opacity: 1; }
+            100% { transform: translateY(0); }
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1.2rem, 4vw, 2rem);
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 2rem;
+            font-weight: 300;
+            animation: slideUp 1s ease-out 1s both;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: linear-gradient(45deg, rgba(64, 165, 255, 0.15), rgba(34, 197, 94, 0.15));
+            border: 1px solid rgba(64, 165, 255, 0.4);
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 3rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s ease;
+            animation: badgeGlow 3s ease-in-out infinite alternate, slideUp 1s ease-out 1.5s both;
+        }
+
+        .hero-badge:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(64, 165, 255, 0.3);
+        }
+
+        @keyframes badgeGlow {
+            0% { box-shadow: 0 0 15px rgba(64, 165, 255, 0.2); }
+            100% { box-shadow: 0 0 25px rgba(34, 197, 94, 0.3); }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes heroFadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Content Sections */
+        .section {
+            padding: 5rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .section-title {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(2rem, 6vw, 4rem);
+            text-align: center;
+            margin-bottom: 3rem;
+            background: linear-gradient(45deg, #40a5ff, #22c55e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: sectionTitleSlide 1s ease-out;
+        }
+
+        @keyframes sectionTitleSlide {
+            from { transform: translateY(-30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Mission Cards */
+        .mission-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .mission-card {
+            background: linear-gradient(135deg, 
+                rgba(64, 165, 255, 0.08) 0%,
+                rgba(34, 197, 94, 0.08) 50%,
+                rgba(168, 85, 247, 0.08) 100%);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 2.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s ease;
+            animation: cardSlideIn 0.8s ease-out;
+        }
+
+        .mission-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(64, 165, 255, 0.1), 
+                transparent);
+            transition: left 0.6s;
+        }
+
+        .mission-card:hover::before {
+            left: 100%;
+        }
+
+        .mission-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(64, 165, 255, 0.2);
+            border-color: rgba(64, 165, 255, 0.3);
+        }
+
+        @keyframes cardSlideIn {
+            from { transform: translateY(40px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+            animation: iconFloat 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes iconFloat {
+            0% { transform: translateY(0px) rotate(0deg); }
+            100% { transform: translateY(-5px) rotate(2deg); }
+        }
+
+        .card-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #40a5ff;
+        }
+
+        .card-text {
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 1.1rem;
+        }
+
+        .highlight {
+            background: linear-gradient(45deg, #40a5ff, #22c55e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 600;
+        }
+
+        /* Tech Stack */
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            margin: 3rem 0;
+        }
+
+        .tech-item {
+            background: rgba(64, 165, 255, 0.1);
+            border: 1px solid rgba(64, 165, 255, 0.3);
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 1rem;
+            transition: all 0.4s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            animation: techItemPulse 4s ease-in-out infinite alternate;
+        }
+
+        .tech-item::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(64, 165, 255, 0.2) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            transition: all 0.4s ease;
+        }
+
+        .tech-item:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 25px rgba(64, 165, 255, 0.4);
+            border-color: rgba(22, 197, 94, 0.5);
+        }
+
+        .tech-item:hover::after {
+            width: 150px;
+            height: 150px;
+        }
+
+        @keyframes techItemPulse {
+            0% { box-shadow: 0 0 8px rgba(64, 165, 255, 0.2); }
+            100% { box-shadow: 0 0 15px rgba(34, 197, 94, 0.3); }
+        }
+
+        /* Team Info Section */
+        .team-info {
+            background: linear-gradient(135deg, 
+                rgba(64, 165, 255, 0.1) 0%,
+                rgba(34, 197, 94, 0.1) 100%);
+            border-radius: 25px;
+            padding: 3rem;
+            margin: 4rem 0;
+            border: 1px solid rgba(64, 165, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+            animation: teamInfoSlide 1s ease-out;
+        }
+
+        .team-info::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(
+                transparent, 
+                rgba(64, 165, 255, 0.05), 
+                transparent,
+                rgba(34, 197, 94, 0.05),
+                transparent
+            );
+            animation: teamInfoRotate 15s linear infinite;
+        }
+
+        @keyframes teamInfoRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes teamInfoSlide {
+            from { transform: translateX(-50px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .team-info-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .location {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            color: #40a5ff;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            text-align: center;
+            padding: 4rem 2rem;
+            margin: 3rem 0;
+            position: relative;
+        }
+
+        .cta-title {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            margin-bottom: 2rem;
+            background: linear-gradient(45deg, #40a5ff, #22c55e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: ctaTitlePulse 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes ctaTitlePulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.02); }
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1.5rem 3rem;
+            background: linear-gradient(45deg, #40a5ff, #22c55e);
+            background-size: 200% 200%;
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            animation: buttonGradientShift 4s ease infinite;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .cta-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 40px rgba(64, 165, 255, 0.5);
+        }
+
+        .cta-button:hover::before {
+            left: 100%;
+        }
+
+        @keyframes buttonGradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        /* Scroll Indicator */
+        .scroll-indicator {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+            font-size: 1.8rem;
+            color: #40a5ff;
+            z-index: 1000;
+            opacity: 0.7;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+            40% { transform: translateX(-50%) translateY(-8px); }
+            60% { transform: translateX(-50%) translateY(-4px); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .section { padding: 3rem 1rem; }
+            .mission-grid { grid-template-columns: 1fr; }
+            .tech-stack { gap: 0.5rem; }
+            .tech-item { padding: 0.8rem 1.5rem; font-size: 0.9rem; }
+            .mission-card { padding: 2rem; }
+            .team-info { padding: 2rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Subtle Animated Background -->
+    <div class="animated-bg"></div>
+    
+    <!-- Minimal Particles -->
+    <div class="particles"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-brand">BlueMetrics</div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">BlueMetrics</h1>
+            <p class="hero-subtitle">Ocean Plastic Detection System</p>
+            <div class="hero-badge">🚀 NASA Space Apps Challenge 2025</div>
+        </div>
+        <div class="scroll-indicator">⬇</div>
+    </section>
+
+    <!-- Mission Section -->
+    <section class="section">
+        <h2 class="section-title">Our Mission</h2>
+        <div class="mission-grid">
+            <div class="mission-card">
+                <span class="card-icon">🌊</span>
+                <h3 class="card-title">Ocean Guardians</h3>
+                <p class="card-text">We are a <span class="highlight">tech-savvy, environmentally-conscious team</span> passionate about using cutting-edge technology to protect our oceans. Our mission is to revolutionize how we detect and combat plastic pollution.</p>
+            </div>
+            
+            <div class="mission-card">
+                <span class="card-icon">🛰️</span>
+                <h3 class="card-title">AI-Powered Detection</h3>
+                <p class="card-text">Our <span class="highlight">Plastic Waste Tracker</span> leverages <span class="highlight">satellite imagery and artificial intelligence</span> to identify plastic pollution in rivers, lakes, and coastlines with unprecedented accuracy.</p>
+            </div>
+            
+            <div class="mission-card">
+                <span class="card-icon">💡</span>
+                <h3 class="card-title">Innovation Hub</h3>
+                <p class="card-text">By combining <span class="highlight">machine learning algorithms</span> with NASA's satellite data, we're creating real-time environmental intelligence that empowers researchers, policymakers, and conservationists worldwide.</p>
+            </div>
+            
+            <div class="mission-card">
+                <span class="card-icon">🎯</span>
+                <h3 class="card-title">Global Impact</h3>
+                <p class="card-text">As part of the <span class="highlight">"Create Your Own Challenge"</span> category, we're pushing boundaries and demonstrating how space technology can address Earth's most pressing environmental challenges.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tech Stack Section -->
+    <section class="section">
+        <h2 class="section-title">Our Technology</h2>
+        <div class="tech-stack">
+            <div class="tech-item">🛰️ Satellite Imagery</div>
+            <div class="tech-item">🧠 Machine Learning</div>
+            <div class="tech-item">👁️ Computer Vision</div>
+            <div class="tech-item">📊 Data Analytics</div>
+            <div class="tech-item">🌍 Remote Sensing</div>
+            <div class="tech-item">🔬 Environmental Science</div>
+            <div class="tech-item">☁️ Cloud Computing</div>
+            <div class="tech-item">📱 Mobile Development</div>
+        </div>
+    </section>
+
+    <!-- Team Info Section -->
+    <section class="section">
+        <div class="team-info">
+            <div class="team-info-content">
+                <div class="location">
+                    📍 Lucknow, India - NASA Space Apps Local Event
+                </div>
+                <h3 style="font-size: 1.5rem; margin-bottom: 1rem; color: #40a5ff;">Challenge Details</h3>
+                <p style="font-size: 1.1rem; line-height: 1.8;">
+                    <strong>Category:</strong> Create Your Own Challenge<br>
+                    <strong>Focus:</strong> Ocean Plastic Detection using Satellite Data & AI<br>
+                    <strong>Goal:</strong> Real-time monitoring and mapping of marine plastic pollution
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <h2 class="cta-title">Join Our Mission</h2>
+        <p style="font-size: 1.3rem; margin-bottom: 2rem; color: rgba(255, 255, 255, 0.8);">
+            Together, we can leverage technology to protect our oceans and create a sustainable future.
+        </p>
+        <a href="https://www.spaceappschallenge.org/2025/find-a-team/bluemetrics/?tab=details" class="cta-button">
+            🌍 Connect With BlueMetrics
+        </a>
+    </section>
+
+    <script>
+        // Create minimal particles
+        function createParticles() {
+            const particlesContainer = document.querySelector('.particles');
+            const particleCount = 30;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (Math.random() * 10 + 15) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 100) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -80px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animationPlayState = 'running';
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Smooth scroll for internal links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Subtle mouse parallax effect
+        document.addEventListener('mousemove', (e) => {
+            const cards = document.querySelectorAll('.mission-card');
+            const x = (e.clientX / window.innerWidth - 0.5) * 0.5;
+            const y = (e.clientY / window.innerHeight - 0.5) * 0.5;
+
+            cards.forEach((card, index) => {
+                const speed = (index + 1) * 0.3;
+                card.style.transform += ` translate(${x * speed}px, ${y * speed}px)`;
+            });
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            createParticles();
+            
+            // Observe elements for animation
+            document.querySelectorAll('.mission-card, .tech-item, .team-info').forEach(el => {
+                observer.observe(el);
+            });
+
+            // Hide scroll indicator after first scroll
+            window.addEventListener('scroll', () => {
+                const scrollIndicator = document.querySelector('.scroll-indicator');
+                if (window.scrollY > 200) {
+                    scrollIndicator.style.opacity = '0';
+                }
+            });
+        });
+
+        // Tech item interaction
+        document.querySelectorAll('.tech-item').forEach(item => {
+            item.addEventListener('click', function() {
+                this.style.transform = 'scale(1.15)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 200);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -14,13 +14,44 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0c1445 0%, #1a237e 30%, #283593 60%, #3f51b5 100%);
+            background: transparent;
             color: white;
             overflow: hidden;
             height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+        }
+
+        /* New background image container */
+      .background-image-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+   background-image: url("/static/pexels-pixabay-355465.jpg");
+    background-size: cover;
+    background-position: center;
+    animation: fadeIn 2s ease-out;
+}
+
+/* Add a dark overlay for readability */
+.background-image-container::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6); /* darker overlay */
+}
+
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 0.2; }
         }
 
         /* Animated background elements */
@@ -406,7 +437,8 @@
     </style>
 </head>
 <body>
-    <!-- Animated background -->
+    <div class="background-image-container"></div>
+
     <div class="stars" id="stars"></div>
     
     <div class="floating-orbs">
@@ -419,9 +451,7 @@
     
     <div class="particles" id="particles"></div>
 
-    <!-- Main content -->
     <div class="intro-container" id="intro-container">
-        <!-- Logo container -->
         <div class="logo-container">
             <div class="logo-placeholder" id="logo-placeholder">
                 <i class="fas fa-satellite logo-icon"></i>
@@ -430,13 +460,11 @@
             </div>
         </div>
 
-        <!-- Title and subtitle -->
         <h1 class="title">PlastiSat</h1>
         <p class="subtitle">
             Advanced satellite-based plastic detection system for ocean monitoring and environmental protection
         </p>
 
-        <!-- Start button - FIXED -->
         <a href="/app" class="start-button" id="start-button" onclick="startApp(event)">
             <span>Start Application</span>
         </a>
@@ -633,4 +661,19 @@
         }
     </script>
 </body>
+<footer style="
+    width: 100%;
+    padding: 15px 0;
+    text-align: center;
+    background-color: #0f0f23;  /* Dark blue/black background */
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.3);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+">
+    &copy; 2025 Blue Metrics. All Rights Reserved. 
+</footer>
 </html>
